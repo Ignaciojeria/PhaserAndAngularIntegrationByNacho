@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 
-import * as Phaser from "phaser-ce";
-
 
 @Component({
   selector: 'app-root',
