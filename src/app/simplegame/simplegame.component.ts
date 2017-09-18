@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as Phaser from "phaser-ce";
+
 @Component({
   selector: 'app-simplegame',
   templateUrl: './simplegame.component.html',
@@ -11,6 +11,7 @@ export class SimplegameComponent{
   private star:Phaser.Sprite;
   private sky:Phaser.Sprite;
   private ground:Phaser.Sprite;
+  private player:Phaser.Sprite;
 
   //platform group
   private platforms:Phaser.Group;
@@ -23,7 +24,7 @@ export class SimplegameComponent{
 
 
   constructor() {
-    this.game = new Phaser.Game(this.ancho,this.alto, Phaser.AUTO, 'content', { preload: this.preload, create: this.create });
+    this.game = new Phaser.Game(this.ancho,this.alto, Phaser.AUTO, 'content', { preload: this.preload, create: this.create, update:this.update });
     this.world=this.game.world;}
 
 
@@ -34,6 +35,7 @@ private preload() {
   this.game.load.image('ground', 'assets/platform.png');
   this.game.load.image('star', 'assets/star.png');
   this.game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+  
 }
 
 
@@ -63,7 +65,24 @@ private create() {
     ledge.body.immovable = true;
     ledge = this.platforms.create(-140, 240, 'ground');
     ledge.body.immovable = true;
+      // The player and its settings
+    this.player = this.game.add.sprite(32, this.world.height - 150, 'dude');
+    
+    //  We need to enable physics on the player
+    this.game.physics.arcade.enable(this.player);
+    
+    //  Player physics properties. Give the little guy a slight bounce.
+    this.player.body.bounce.y = 0.2;
+    this.player.body.gravity.y = 300;
+    this.player.body.collideWorldBounds = true;
+    
+    //  Our two animations, walking left and right.
+    this.player.animations.add('left', [0, 1, 2, 3], 10, true);
+    this.player.animations.add('right', [5, 6, 7, 8], 10, true);
+    this.player.body.gravity.y=300;   
 }
-
+  update(){
+    this.game.physics.arcade.collide(this.player, this.platforms);
+  }
 
 }
