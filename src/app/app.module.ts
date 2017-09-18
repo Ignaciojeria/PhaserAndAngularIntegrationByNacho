@@ -1,14 +1,17 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+
 import { AppComponent } from './app.component';
+import { SimplegameComponent } from './simplegame/simplegame.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SimplegameComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
