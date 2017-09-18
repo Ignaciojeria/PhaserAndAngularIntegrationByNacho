@@ -8,7 +8,6 @@ import { Component, OnInit } from '@angular/core';
 export class SimplegameComponent{
 
   //Sprites
-  private star:Phaser.Sprite;
   private sky:Phaser.Sprite;
   private ground:Phaser.Sprite;
   private player:Phaser.Sprite;
@@ -16,8 +15,9 @@ export class SimplegameComponent{
   //cursor
   private cursors:Phaser.CursorKeys;
 
-  //platform group
+  //groups
   private platforms:Phaser.Group;
+  private stars:Phaser.Group;
    //Phaser Game and World
    private game: Phaser.Game;
    private world:Phaser.World;
@@ -49,7 +49,6 @@ private create() {
    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
    this.sky=this.game.add.sprite(0, 0, 'sky');
-   this.star=this.game.add.sprite(0, 0, 'star');
     //  The platforms group contains the ground and the 2 ledges we can jump on
    this.platforms=this.game.add.group();
       //  We will enable physics for any object that is created in this group
@@ -84,14 +83,34 @@ private create() {
     //  Our two animations, walking left and right.
     this.player.animations.add('left', [0, 1, 2, 3], 10, true);
     this.player.animations.add('right', [5, 6, 7, 8], 10, true);
-    this.player.body.gravity.y=400;
+    this.player.body.gravity.y=300;
+
+    this.stars=this.game.add.group();
+    this.stars.enableBody=true;
+
+    for (let i = 0; i < 12; i++)
+    {
+        //  Create a star inside of the 'stars' group
+        var star = this.stars.create(i * 70, 0, 'star');
+
+        //  Let gravity do its thing
+        star.body.gravity.y = 400;
+
+        //  This just gives each star a slightly random bounce value
+        star.body.bounce.y = 0.7 + Math.random() * 0.2;
+    }
 
     //inicializando el teclado xD
     this.cursors=this.game.input.keyboard.createCursorKeys();
 }
   private update(){
-    var hitPlatform= this.game.physics.arcade.collide(this.player, this.platforms);
+    let hitPlatform= this.game.physics.arcade.collide(this.player, this.platforms);
+    let hitStars=this.game.physics.arcade.collide(this.stars,this.platforms);
 
+    /*esto detecta la colición entre el jugador y las estrellas.El tercer parametro es una función.
+      Esta función recibe dos parametros que son los Sprites que colisionaron.*/
+    this.game.physics.arcade.overlap(this.player,this.stars,(plater,star)=>{ star.kill();});
+    
     //  Reset the players velocity (movement)
     this.player.body.velocity.x = 0;
     
