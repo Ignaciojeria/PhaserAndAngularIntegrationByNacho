@@ -1,16 +1,23 @@
 import { Component, OnInit } from '@angular/core';
+import { ScoreService } from '../services/score.service';
 
 @Component({
   selector: 'app-simplegame',
   templateUrl: './simplegame.component.html',
   styleUrls: ['./simplegame.component.css']
 })
-export class SimplegameComponent{
+export class SimplegameComponent implements OnInit{
+ 
+  ngOnInit(): void {
+    this.scoreService.getPoints().subscribe(points=>SimplegameComponent.score=points,err=>console.log(err));
+  }
 
   //Sprites
   private sky:Phaser.Sprite;
   private ground:Phaser.Sprite;
   private player:Phaser.Sprite;
+  private scoreText;
+  private static score:string;
 
   //cursor
   private cursors:Phaser.CursorKeys;
@@ -23,16 +30,15 @@ export class SimplegameComponent{
    private world:Phaser.World;
    private ancho:number=800;
    private alto:number=600;
-   
 
 
-  constructor() {
+  constructor(private scoreService:ScoreService) {
     this.game = new Phaser.Game(this.ancho,this.alto, Phaser.AUTO, 'content', { preload: this.preload, create: this.create, update:this.update });
     this.world=this.game.world;
+ 
       
   }
-
-
+ 
 
 
 private preload() {
@@ -45,6 +51,7 @@ private preload() {
 
 
 private create() {
+
   //  We're going to be using physics, so enable the Arcade Physics system
    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -102,6 +109,9 @@ private create() {
 
     //inicializando el teclado xD
     this.cursors=this.game.input.keyboard.createCursorKeys();
+
+    this.scoreText=this.game.add.text(16,16,'Score: '+SimplegameComponent.score,);
+    
 }
   private update(){
     let hitPlatform= this.game.physics.arcade.collide(this.player, this.platforms);
@@ -109,7 +119,7 @@ private create() {
 
     /*esto detecta la colición entre el jugador y las estrellas.El tercer parametro es una función.
       Esta función recibe dos parametros que son los Sprites que colisionaron.*/
-    this.game.physics.arcade.overlap(this.player,this.stars,(plater,star)=>{ star.kill();});
+    this.game.physics.arcade.overlap(this.player,this.stars,(plater,star)=>{ star.kill(); this.scoreText.text="Score: "+SimplegameComponent.score; SimplegameComponent.asd();});
     
     //  Reset the players velocity (movement)
     this.player.body.velocity.x = 0;
